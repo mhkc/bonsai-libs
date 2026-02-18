@@ -1,7 +1,7 @@
 """API input and response models."""
 from datetime import datetime
 from enum import StrEnum
-from typing import Literal
+from typing import Annotated, Literal
 from pydantic import BaseModel, Field
 
 from bonsai_libs.types.common import Model, IgnoreExtraModelMixin
@@ -35,20 +35,13 @@ class SequencingInfo(Model, IgnoreExtraModelMixin):
     sequenced_at: datetime | None = None
 
 
-class MetadataTypes(StrEnum):
-
-    STR = "string"
-    INT = "integer"
-    FLOAT = "float"
-
-
 class GenericMetadataEntry(Model):
     """Container of basic metadata information"""
 
     fieldname: str
     value: str | int | float
     category: str
-    type: MetadataTypes
+    type: Literal["string", "integer", "float"]
 
 
 class DatetimeMetadataEntry(Model):
@@ -57,7 +50,7 @@ class DatetimeMetadataEntry(Model):
     fieldname: str
     value: datetime
     category: str
-    type: Literal["datetime"]
+    type: Literal["datetime"] = "datetime"
 
 
 class InputTableMetadata(Model):
@@ -69,8 +62,12 @@ class InputTableMetadata(Model):
     type: Literal["table"] = "table"
 
 
-InputMetaEntry = DatetimeMetadataEntry | InputTableMetadata | GenericMetadataEntry
-
+InputMetaEntry = Annotated[
+    DatetimeMetadataEntry
+    | InputTableMetadata
+    | GenericMetadataEntry,
+    Field(discriminator='type')
+]
 
 class InputSampleInfo(Model, IgnoreExtraModelMixin):  # pylint: disable=too-few-public-methods
     """Defines output structure of group info used for creation."""
