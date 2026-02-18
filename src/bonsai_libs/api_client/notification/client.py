@@ -4,7 +4,7 @@ import logging
 from http import HTTPStatus
 
 from bonsai_libs.api_client.core.base import BaseClient
-from bonsai_libs.api_client.core.exceptions import HTTPException
+from bonsai_libs.api_client.core.exceptions import ClientError
 
 from .models import EmailCreate
 
@@ -20,7 +20,7 @@ class NotificationClient(BaseClient):
         payload = email.model_dump(mode="json")
         try:
             self.post("/send-email", json=payload, expected_status=(HTTPStatus.OK,))
-        except HTTPException as exc:
+        except ClientError as exc:
             LOG.error(
                 "Something went wrong when sending an email; %s",
                 exc,

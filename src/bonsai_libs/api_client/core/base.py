@@ -10,7 +10,7 @@ from typing import Any, Literal
 
 import requests
 
-from .exceptions import ApiRequestError, UnauthorizedError, raise_for_status
+from .exceptions import ApiRequestFailed, UnauthorizedError, raise_for_status
 from .auth import AuthStrategy
 
 LOG = logging.getLogger(__name__)
@@ -123,7 +123,7 @@ class BaseClient(ABC):
                     extra={"url": api_url},
                 )
                 self._sleep_with_jitter(attempt)
-        raise ApiRequestError(f"Request {method} {api_url} failed")
+        raise ApiRequestFailed(f"Request {method} {api_url} failed")
 
     def _sleep_with_jitter(self, attempt: int) -> None:
         """Sleep time with a small jitter.
