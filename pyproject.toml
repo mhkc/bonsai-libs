@@ -1,5 +1,5 @@
 [project]
-name = "bonsai-api-client"
+name = "bonsai-libs"
 dynamic = ["version"]
 description = "Shared API client used by Bonsai services (audit, notification, etc.)."
 requires-python = ">=3.11"
@@ -7,11 +7,14 @@ authors = [
     { name = "Markus Johansson", email = "markus.h.johansson@skane.se" }
 ]
 classifiers = [
-    "Programming Language :: Python :: 3"
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Typing :: Typed",
+
 ]
 dependencies = [
     "requests>=2.28",
-    "pydantic>=1.10",
+    "pydantic>=2.6",
 ]
 
 [project.optional-dependencies]
@@ -26,11 +29,32 @@ tests = [
 ]
 
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0", "setuptools-scm>=8", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["src"]
 
 [tool.setuptools.dynamic]
-version = {attr = "api_client.__version__"}
+version = {attr = "bonsai_libs.__version__"}
+
+[tool.setuptools_scm]
+write_to = "src/bonsai_libs/_version.py"
+write_to_template = "__version__ = '{version}'\n"
+
+[tool.black]
+target-version = ["py311"]
+line-length = 100
+exclude = "/(venv|.venv|build|dist|.git)/"
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["bonsai_libs"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
