@@ -25,7 +25,8 @@ class BonsaiApiClient(BaseClient):
         """
         try:
             resp = self.post(
-                "/token", json={"username": username, "password": password},
+                "token", body={"username": username, "password": password},
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
                 expected_status=(HTTPStatus.OK,)
             )
         except UnauthorizedError:
@@ -54,7 +55,7 @@ class BonsaiApiClient(BaseClient):
 
         payload = sample_info
         try:
-            resp = self.post("/samples/", json=payload, expected_status=(HTTPStatus.OK,))
+            resp = self.post("samples/", json=payload, expected_status=(HTTPStatus.OK,))
         except ClientError as exc:
             LOG.error(
                 "Something went wrong creating the sample; %s",

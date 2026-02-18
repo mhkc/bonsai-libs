@@ -62,6 +62,8 @@ class BaseClient(ABC):
         # merge headers
         combined_headers: dict[str, str] = {}
         combined_headers.update(self.default_headers)
+
+        # Add user supplied headers
         if headers:
             combined_headers.update(headers)
 
