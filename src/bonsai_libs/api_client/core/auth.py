@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Callable, Mapping, Protocol
 from threading import RLock
 import time
-from .exceptions import HTTPException, UnauthorizedError
+from .exceptions import UnauthorizedError
 
 
 class AuthStrategy(Protocol):
