@@ -1,3 +1,5 @@
 """API client package"""
 
-__version__ = "0.1.0"
+from .audit_log.client import AuditLogClient
+from .notification.client import NotificationClient
+from .bonsai.client import BonsaiApiClient
