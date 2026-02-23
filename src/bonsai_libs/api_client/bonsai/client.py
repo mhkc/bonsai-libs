@@ -6,11 +6,11 @@ import mimetypes
 
 LOG = logging.getLogger(__name__)
 
-from bonsai_libs.api_client.core.base import BaseClient
+from bonsai_libs.api_client.core.base import BaseClient, merge_headers
 from bonsai_libs.api_client.core.auth import BearerTokenAuth
 from bonsai_libs.api_client.core.exceptions import ClientError, UnauthorizedError
 
-from .models import CreateSampleResponse, InputAnalysisResult, InputSampleInfo
+from .models import CreateSampleResponse, InputAnalysisResult, InputSampleInfo, OpHeaders
 
 class BonsaiApiClient(BaseClient):
     """High-level interface to the Bonsai API."""
@@ -19,15 +19,19 @@ class BonsaiApiClient(BaseClient):
     # ----------------------------
     # Authentication
     # ----------------------------
-    def authenticate_user(self, username: str, password: str) -> bool:
+    def authenticate_user(self, username: str, password: str, *, headers: OpHeaders = None) -> bool:
         """Authenticate using username/password and configure bearer token.
         
         Returns True if login was successful.
         """
+        final_headers = merge_headers(
+            headers or {},
+            {"Content-Type": "application/x-www-form-urlencoded"}
+        )
         try:
             resp = self.post(
                 "token", body={"username": username, "password": password},
-                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                headers=final_headers,
                 expected_status=(HTTPStatus.OK,)
             )
         except UnauthorizedError:
@@ -52,12 +56,16 @@ class BonsaiApiClient(BaseClient):
     # Samples
     # ----------------------------
 
-    def create_sample(self, sample_info: InputSampleInfo) -> CreateSampleResponse:
+    def create_sample(self, sample_info: InputSampleInfo, *, headers: OpHeaders = None) -> CreateSampleResponse:
         """Create a new sample in Bonsai."""
 
         payload = sample_info.model_dump()
+        final_headers = merge_headers(
+            headers or {},
+            {"Content-Type": "application/x-www-form-urlencoded"}
+        )
         try:
-            resp = self.post("samples/", json=payload, expected_status=(HTTPStatus.OK,))
+            resp = self.post("samples/", json=payload, headers=final_headers, expected_status=(HTTPStatus.OK,))
         except ClientError as exc:
             LOG.error(
                 "Something went wrong creating the sample; %s",
@@ -67,13 +75,17 @@ class BonsaiApiClient(BaseClient):
         
         return CreateSampleResponse.model_validate(resp)
 
-    def add_samples_to_group(self, group_id: str, *, sample_ids: list[str]):
+    def add_samples_to_group(self, group_id: str, *, sample_ids: list[str], headers: OpHeaders = None):
         """Add sample to group."""
 
         url = f"groups/{group_id}/samples"
         params = {"s": sample_ids}
+        final_headers = merge_headers(
+            headers or {},
+            {"Content-Type": "application/x-www-form-urlencoded"}
+        )
         try:
-            resp = self.put(url, expected_status=(HTTPStatus.OK,), params=params)
+            resp = self.put(url, expected_status=(HTTPStatus.OK,), params=params, headers=final_headers)
         except ClientError as exc:
             LOG.error(
                 "Something went wrong creating the sample; %s",
@@ -82,12 +94,17 @@ class BonsaiApiClient(BaseClient):
             )
         return resp
 
-    def upload_sourmash_signature(self, sample_id: str, *, signature) -> str:
+    def upload_sourmash_signature(self, sample_id: str, *, signature, headers: OpHeaders = None) -> str:
         """Upload sourmash signature to sample"""
 
+        final_headers = merge_headers(
+            headers or {},
+            {"Content-Type": "application/x-www-form-urlencoded"}
+        )
         try:
             resp = self.post(
                 f"samples/{sample_id}/signature", 
+                headers=final_headers,
                 files={"signature": signature}
             )
         except ClientError as exc:
@@ -98,13 +115,17 @@ class BonsaiApiClient(BaseClient):
         # return jobid
         return resp
 
-    def upload_ska_index(self, sample_id: str, *, index_path: str, headers: dict[str, str] | None = None) -> str:
+    def upload_ska_index(self, sample_id: str, *, index_path: str, headers: OpHeaders = None) -> str:
         """Upload sourmash signature to sample"""
         params = {"index": index_path}
         headers = headers or {}
+        final_headers = merge_headers(
+            headers or {},
+            {"Content-Type": "application/x-www-form-urlencoded"}
+        )
         try:
             resp = self.post(
-                f"samples/{sample_id}/signature", params=params, headers=headers
+                f"samples/{sample_id}/signature", params=params, headers=final_headers
             )
         except ClientError as exc:
             LOG.error(
@@ -113,8 +134,13 @@ class BonsaiApiClient(BaseClient):
             )
         return resp
     
-    def upload_analysis_result(self, result: InputAnalysisResult, *, force: bool = False):
+    def upload_analysis_result(self, result: InputAnalysisResult, *, headers: OpHeaders = None, force: bool = False):
         """Upload a analysis results to a existing sample."""
+
+        final_headers = merge_headers(
+            headers or {},
+            {"Content-Type": "application/x-www-form-urlencoded"}
+        )
 
         # build the data
         data = {
@@ -133,7 +159,7 @@ class BonsaiApiClient(BaseClient):
 
             try:
                 resp = self.post(
-                    "analysis/", data=data, files=files,
+                    "analysis/", data=data, files=files, headers=final_headers,
                     expected_status=(HTTPStatus.OK,)
                 )
             except ClientError as exc:

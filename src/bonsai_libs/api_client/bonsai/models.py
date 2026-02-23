@@ -2,10 +2,13 @@
 from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TypeAlias
 from pydantic import BaseModel, Field
 
 from bonsai_libs.types.common import Model, IgnoreExtraModelMixin
+
+Headers: TypeAlias = dict[str, str]
+OpHeaders: TypeAlias = Headers | None 
 
 
 class Visibility(StrEnum):

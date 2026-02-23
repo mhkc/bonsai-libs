@@ -168,3 +168,12 @@ class BaseClient(ABC):
         """DELETE request to entrypoint."""
         LOG.debug("Request: DELETE %s; params: %s", path, kwargs)
         return self._request("DELETE", path, **kwargs)
+
+
+def merge_headers(*dicts: dict[str, str] | None) -> dict[str, str]:
+    """Merge multiple header dictionaries, with later dicts taking precedence."""
+    out = {}
+    for d in dicts:
+        if d:
+            out.update(d)
+    return out
