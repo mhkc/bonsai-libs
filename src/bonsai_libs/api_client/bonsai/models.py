@@ -1,6 +1,7 @@
 """API input and response models."""
 from datetime import datetime
 from enum import StrEnum
+from pathlib import Path
 from typing import Annotated, Literal
 from pydantic import BaseModel, Field
 
@@ -76,8 +77,6 @@ class InputSampleInfo(Model, IgnoreExtraModelMixin):  # pylint: disable=too-few-
     sample_name: str
     lims_id: str | None = None
 
-    groups: list[str] = Field(default_factory=list, description="Group ids")
-
     sequencing: SequencingInfo | None = None
     metadata: list[InputMetaEntry] = Field(default_factory=list)
 
@@ -87,10 +86,20 @@ class InputSampleInfo(Model, IgnoreExtraModelMixin):  # pylint: disable=too-few-
     access_groups: list[str] = Field(default_factory=list, description="Optional access groups")
     visibility: Visibility = Visibility.PUBLIC
 
-
 class CreateSampleResponse(BaseModel):
     """Expected response data when creating a sample."""
 
     inserted_id: str
     internal_sample_id: str
     external_sample_id: str
+
+class InputAnalysisResult(BaseModel):
+    """API input for uploading analysis results."""
+
+    sample_id: str
+    pipeline_run_id: str | None = None
+
+    # result
+    software: str
+    software_version: str
+    file: Path

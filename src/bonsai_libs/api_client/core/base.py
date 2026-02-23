@@ -10,6 +10,8 @@ from typing import Any, Literal
 
 import requests
 
+from bonsai_libs.api_client.core.response import ApiResponse
+
 from .exceptions import ApiRequestFailed, UnauthorizedError, raise_for_status
 from .auth import AuthStrategy
 
@@ -54,16 +56,13 @@ class BaseClient(ABC):
         timeout: float | None = None,
         headers: dict[str, str] | None = None,
         **kwargs: Any,
-    ) -> JSONData | str | None:
+    ) -> ApiResponse | None:
         """Base request class"""
-        api_url = f"{self.base_url}/{path}"
+        url = f"{self.base_url}/{path.lstrip('/')}"
         attempts = self.retries + 1
 
-        # merge headers
-        combined_headers: dict[str, str] = {}
-        combined_headers.update(self.default_headers)
-
-        # Add user supplied headers
+        # merge base + user headers
+        combined_headers: dict[str, str] = dict(self.default_headers)
         if headers:
             combined_headers.update(headers)
 
@@ -77,23 +76,21 @@ class BaseClient(ABC):
         did_force_refresh = False  # ensure only one force refresh per request
 
         for attempt in range(1, attempts + 1):
-            LOG.info("Request: %s %s - attempt %d", method, api_url, attempt)
+            LOG.info("Request: %s %s - attempt %d", method, url, attempt)
             try:
                 resp = self.session.request(
                     method,
-                    api_url,
+                    url,
                     headers=combined_headers,
                     timeout=timeout or self.timeout,
                     **kwargs,
                 )
 
-                # Handle 401 error; attempt one forced refresh if implemented and then retry
-                if all(
-                    [
-                        resp.status_code == HTTPStatus.UNAUTHORIZED,
-                        self.auth is not None,
-                        not did_force_refresh,
-                    ]
+                # 401 error; attempt one forced refresh if implemented and then retry
+                if (resp.status_code == HTTPStatus.UNAUTHORIZED
+                    and self.auth is not None
+                    and hasattr(self.auth, "force_refresh")
+                    and not did_force_refresh
                 ):
                     LOG.warning("401 recieved, appempting token refresh and retry")
                     try:
@@ -107,25 +104,41 @@ class BaseClient(ABC):
                         LOG.exception("Token refresh failed, %s", exc)
                         raise UnauthorizedError("Authentication failed") from exc
 
+                # Check if non-successful status codes
                 if resp.status_code not in expected_status:
                     raise_for_status(resp.status_code, resp.text)
 
-                # parse response
+                # Construct unified ApiResponse
                 if resp.status_code == HTTPStatus.NO_CONTENT or resp.content is None:
-                    return None
+                    return ApiResponse(
+                        status=resp.status_code,
+                        data=None,
+                        raw=resp,
+                        headers=dict(resp.headers),
+                    )
                 content_type = resp.headers.get("Content-Type", "").lower()
                 if "application/json" in content_type:
-                    return resp.json()
-                return resp.text  # resturn as string
+                    data = resp.json()
+                else:
+                    data = resp.text
+                
+                return ApiResponse(
+                    status=resp.status_code,
+                    data=data,
+                    raw=resp,
+                    headers=dict(resp.headers),
+                )
             except (requests.ConnectionError, requests.Timeout):
                 LOG.debug(
                     "Request attempt %d failed retrying %d times",
                     attempt,
                     attempts,
-                    extra={"url": api_url},
+                    extra={"url": url},
                 )
                 self._sleep_with_jitter(attempt)
-        raise ApiRequestFailed(f"Request {method} {api_url} failed")
+        raise ApiRequestFailed(f"Request {method} {url} failed")
+    
+    # Retry and backoff logic
 
     def _sleep_with_jitter(self, attempt: int) -> None:
         """Sleep time with a small jitter.
