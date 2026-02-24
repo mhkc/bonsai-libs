@@ -30,7 +30,7 @@ class BonsaiApiClient(BaseClient):
         )
         try:
             resp = self.post(
-                "token", body={"username": username, "password": password},
+                "token", data={"username": username, "password": password},
                 headers=final_headers,
                 expected_status=(HTTPStatus.OK,)
             )
