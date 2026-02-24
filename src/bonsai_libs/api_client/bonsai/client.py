@@ -38,7 +38,11 @@ class BonsaiApiClient(BaseClient):
             LOG.error("Invalid login credentials for user=%s", username)
             return False
         except ClientError as exc:
-            LOG.error("Failed authenticating user=%s", username, exc_info=exc)
+            LOG.error(
+                "Something went wrong when authenticating user %s; %s",
+                username,
+                exc,
+            )
             raise
         
         token_type = resp.get("token_type", "").lower()
@@ -149,21 +153,12 @@ class BonsaiApiClient(BaseClient):
 
     def upload_analysis_result(self, result: InputAnalysisResult, *, headers: OpHeaders = None, force: bool = False):
         """Upload a analysis results to a existing sample."""
-
-        final_headers = merge_headers(
-            headers or {},
-            {"Content-Type": "application/x-www-form-urlencoded"}
-        )
+        final_headers = headers or {}
 
         # build the data
-        data = {
-            "sample_id": result.sample_id,
-            "software": result.software,
-            "software_version": result.software_version,
-        }
-        if result.pipeline_run_id:
-            data["pipeline_run_id"] = result.pipeline_run_id
-        
+        data = result.model_dump(exclude={"file"})
+        data['force'] = force
+
         # Guess mime type
         mime = mimetypes.guess_type(result.file.name)[0] or "application/octet-stream"
 
@@ -173,9 +168,9 @@ class BonsaiApiClient(BaseClient):
             try:
                 resp = self.post(
                     "analysis/", data=data, files=files, headers=final_headers,
-                    expected_status=(HTTPStatus.OK,)
+                    expected_status=(HTTPStatus.CREATED,)
                 )
                 return resp
-            except ClientError as exc:
+            except UnauthorizedError as exc:
                 LOG.error("Failed authenticating user=%s", result.sample_id, exc_info=exc)
                 raise
