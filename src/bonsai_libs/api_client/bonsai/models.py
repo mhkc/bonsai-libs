@@ -116,26 +116,28 @@ class PipelineArtifact(BaseModel):
     uri: str
 
 
-class PipelineProvenance(IgnoreExtraModelMixin):
-    """Evidence of what was executed.
-    
-    Includes configfiles, hashes, traces etc."""
+class PipelineDefinition(BaseModel):
+    """Static metadata about the pipeline code itself."""
 
+    name: str
+    version: str
+    commit: str | None = None
+    release_life_cycle: str | None = None
+
+
+class PipelineRunConfig(BaseModel):
+    """Configuration used for this specific execution."""
+
+    command: str
+    analysis_profile: list[str] = Field(default_factory=list)
     configuration_files: list[str] = Field(default_factory=list)
-    environment: dict[str, str] = Field(default_factory=dict)
-    reports: dict[str, str] = Field(default_factory=dict)
 
 
-class PipelineInfo(IgnoreExtraModelMixin):
-    """Describe what pipeline was executed and its configuration."""
+class PipelineInfo(BaseModel):
+    """Full description of the pipeline and its execution."""
 
-    pipeline_name: str
-    pipeline_version: str
-    commit: str
-    release_life_cycle: str
-    commmand: str
-    analysis_profile: list[str]
-    provenance: PipelineProvenance
+    definition: PipelineDefinition
+    run_config: PipelineRunConfig
     artifacts: list[PipelineArtifact] = Field(default_factory=list)
 
 
