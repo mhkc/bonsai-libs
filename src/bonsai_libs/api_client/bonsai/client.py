@@ -133,7 +133,7 @@ class BonsaiApiClient(BaseClient):
     
     def add_pipeline_run(self, sample_id: str, *, pipeline_run: InputPipelineRun, headers: OpHeaders = None) -> str:
         """Add a pipeline run ID to a sample."""
-        payload = pipeline_run.model_dump()
+        payload = pipeline_run.model_dump(mode="json")
         final_headers = merge_headers(
             headers or {},
             {"Content-Type": "application/x-www-form-urlencoded"}
