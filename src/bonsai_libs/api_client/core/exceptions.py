@@ -20,13 +20,13 @@ class ServerError(ApiError):
 
 # ---- 4xx ----
 
-class BadRequestError(ClientError):       status = 400
-class UnauthorizedError(ClientError):     status = 401
-class ForbiddenError(ClientError):        status = 403
-class NotFoundError(ClientError):         status = 404
-class ConflictError(ClientError):         status = 409
-class TooManyRequestsError(ClientError):  status = 429
-
+class BadRequestError(ClientError):             status = 400
+class UnauthorizedError(ClientError):           status = 401
+class ForbiddenError(ClientError):              status = 403
+class NotFoundError(ClientError):               status = 404
+class ConflictError(ClientError):               status = 409
+class UnprocessableEntityError(ClientError):    status = 422
+class TooManyRequestsError(ClientError):        status = 429
 
 # ---- non-HTTP-level errors ----
 
@@ -48,6 +48,7 @@ _STATUS_TO_ERROR: dict[int, type[ApiError]] = {
     403: ForbiddenError,
     404: NotFoundError,
     409: ConflictError,
+    422: UnprocessableEntityError,
     429: TooManyRequestsError,
 }
 
