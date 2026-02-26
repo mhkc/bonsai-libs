@@ -10,7 +10,7 @@ from bonsai_libs.api_client.core.base import BaseClient, merge_headers
 from bonsai_libs.api_client.core.auth import BearerTokenAuth
 from bonsai_libs.api_client.core.exceptions import ClientError, UnauthorizedError
 
-from .models import CreateSampleResponse, InputAnalysisResult, InputPipelineRun, InputSampleInfo, OpHeaders
+from .models import CreateSampleResponse, UploadAnalysisResultInput, InputPipelineRun, InputSampleInfo, OpHeaders, UploadAnalysisResultResponse, UploadResultMeta
 
 class BonsaiApiClient(BaseClient):
     """High-level interface to the Bonsai API."""
@@ -151,7 +151,7 @@ class BonsaiApiClient(BaseClient):
                 exc, extra={"payload": payload},
             )
 
-    def upload_analysis_result(self, result: InputAnalysisResult, *, headers: OpHeaders = None, force: bool = False):
+    def upload_analysis_result(self, result: UploadAnalysisResultInput, *, headers: OpHeaders = None, force: bool = False) -> UploadAnalysisResultResponse:
         """Upload a analysis results to a existing sample."""
         final_headers = headers or {}
 
@@ -170,7 +170,17 @@ class BonsaiApiClient(BaseClient):
                     "analysis/", data=data, files=files, headers=final_headers,
                     expected_status=(HTTPStatus.CREATED,)
                 )
-                return resp
+                request_id = resp.headers.get("x-request-id") or resp.headers.get("X-Request-Id")
+                meta = UploadResultMeta(status=resp.status, request_id=request_id)
+                return UploadAnalysisResultResponse(
+                    sample_id=result.sample_id,
+                    pipeline_run_id=result.pipeline_run_id,
+                    analysis_id=resp.data.get("analysis_id"),
+                    software=result.software,
+                    software_version=result.software_version,
+                    envelopes=resp.get("envelopes", {}),
+                    meta=meta
+                )
             except UnauthorizedError as exc:
                 LOG.error("Failed authenticating user=%s", result.sample_id, exc_info=exc)
                 raise
