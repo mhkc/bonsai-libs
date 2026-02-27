@@ -10,7 +10,7 @@ from bonsai_libs.api_client.core.base import BaseClient, merge_headers
 from bonsai_libs.api_client.core.auth import BearerTokenAuth
 from bonsai_libs.api_client.core.exceptions import ClientError, UnauthorizedError
 
-from .models import CreateSampleResponse, UploadAnalysisResultInput, InputPipelineRun, InputSampleInfo, OpHeaders, UploadAnalysisResultResponse, UploadResultMeta
+from .models import CreateSampleResponse, UploadAnalysisResultInput, PipelineRunInput, SampleInfoInput, OpHeaders, UploadAnalysisResultResponse, UploadResultMeta
 
 class BonsaiApiClient(BaseClient):
     """High-level interface to the Bonsai API."""
@@ -60,7 +60,7 @@ class BonsaiApiClient(BaseClient):
     # Samples
     # ----------------------------
 
-    def create_sample(self, sample_info: InputSampleInfo, *, headers: OpHeaders = None) -> CreateSampleResponse:
+    def create_sample(self, sample_info: SampleInfoInput, *, headers: OpHeaders = None) -> CreateSampleResponse:
         """Create a new sample in Bonsai."""
 
         payload = sample_info.model_dump()
@@ -135,7 +135,7 @@ class BonsaiApiClient(BaseClient):
                 exc, extra={"params": params},
             )
     
-    def add_pipeline_run(self, sample_id: str, *, pipeline_run: InputPipelineRun, headers: OpHeaders = None) -> str:
+    def add_pipeline_run(self, sample_id: str, *, pipeline_run: PipelineRunInput, headers: OpHeaders = None) -> str:
         """Add a pipeline run ID to a sample."""
         payload = pipeline_run.model_dump(mode="json")
         final_headers = merge_headers(

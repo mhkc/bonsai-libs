@@ -57,7 +57,7 @@ class DatetimeMetadataEntry(Model):
     type: Literal["datetime"] = "datetime"
 
 
-class InputTableMetadata(Model):
+class TableMetadataInput(Model):
     """Metadata table info recieved by API."""
 
     fieldname: str
@@ -66,14 +66,14 @@ class InputTableMetadata(Model):
     type: Literal["table"] = "table"
 
 
-InputMetaEntry = Annotated[
+MetaEntryInput = Annotated[
     DatetimeMetadataEntry
-    | InputTableMetadata
+    | TableMetadataInput
     | GenericMetadataEntry,
     Field(discriminator='type')
 ]
 
-class InputSampleInfo(Model, IgnoreExtraModelMixin):  # pylint: disable=too-few-public-methods
+class SampleInfoInput(Model, IgnoreExtraModelMixin):  # pylint: disable=too-few-public-methods
     """Defines output structure of group info used for creation."""
 
     sample_id: str | None = None
@@ -81,7 +81,7 @@ class InputSampleInfo(Model, IgnoreExtraModelMixin):  # pylint: disable=too-few-
     lims_id: str | None = None
 
     sequencing: SequencingInfo | None = None
-    metadata: list[InputMetaEntry] = Field(default_factory=list)
+    metadata: list[MetaEntryInput] = Field(default_factory=list)
 
     # preparation for role based access controll
     owners: list[str] = Field(default_factory=list, description="Owner identifiers (user:<id>)")
@@ -163,7 +163,7 @@ class PipelineInfo(BaseModel):
     artifacts: list[PipelineArtifact] = Field(default_factory=list)
 
 
-class InputPipelineRun(IgnoreExtraModelMixin):
+class PipelineRunInput(IgnoreExtraModelMixin):
     """Describe a execution of a pipeline."""
 
     pipeline_run_id: str
