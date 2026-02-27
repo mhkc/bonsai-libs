@@ -2,7 +2,7 @@
 from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
-from typing import Annotated, Literal, Mapping, TypeAlias
+from typing import Annotated, Any, Literal, Mapping, TypeAlias
 from pydantic import BaseModel, Field
 
 from bonsai_libs.types.common import Model, IgnoreExtraModelMixin
@@ -126,7 +126,7 @@ class UploadAnalysisResultResponse(BaseModel):
     # result
     software: str
     software_version: str
-    envelopes: Mapping[str, str | None] = Field(default_factory=dict)
+    envelopes: Mapping[str, Any] = Field(default_factory=dict)
     meta: UploadResultMeta | None = None
 
 
