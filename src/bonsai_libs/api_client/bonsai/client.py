@@ -62,7 +62,7 @@ class BonsaiApiClient(BaseClient):
     def create_sample(self, sample_info: SampleInfoInput, *, headers: OpHeaders = None) -> CreateSampleResponse:
         """Create a new sample in Bonsai."""
 
-        payload = sample_info.model_dump()
+        payload = sample_info.model_dump(mode="json")
 
         try:
             resp = self.request_json("POST", "samples/", json=payload, headers=headers, expected_status=(HTTPStatus.CREATED,))
