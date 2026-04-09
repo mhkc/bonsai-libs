@@ -126,7 +126,7 @@ class BonsaiApiClient(BaseClient):
         )
         try:
             resp = self.post(
-                f"samples/{sample_id}/signature", params=params, headers=final_headers
+                f"samples/{sample_id}/ska_index", params=params, headers=final_headers
             )
             return resp
         except ClientError as exc:
