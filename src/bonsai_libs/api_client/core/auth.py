@@ -1,9 +1,10 @@
 """Manage API authentication."""
 
-from dataclasses import dataclass
-from typing import Callable, Mapping, Protocol
-from threading import RLock
 import time
+from dataclasses import dataclass
+from threading import RLock
+from typing import Callable, Mapping, Protocol
+
 from .exceptions import UnauthorizedError
 
 
@@ -73,7 +74,7 @@ class OAuth2RefreshingAuth(AuthStrategy):
     OAuth2 auth with access+refresh token cycling.
 
     - `fetch_token`: Callable returning a fresh OAuth2Token
-    - `refresh_token`: Optional callable returning a fresh OAuth2Token given a refresh token. 
+    - `refresh_token`: Optional callable returning a fresh OAuth2Token given a refresh token.
        Only one thread performs refresh.
     """
 

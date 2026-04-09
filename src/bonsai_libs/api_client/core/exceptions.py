@@ -1,7 +1,9 @@
 """API client error handling."""
 
+
 class ApiError(Exception):
     """Base class for all API-related errors."""
+
     status: int | None = None
 
     def __init__(self, message: str, *, status: int | None = None, body: str | None = None):
@@ -20,27 +22,53 @@ class ServerError(ApiError):
 
 # ---- 4xx ----
 
-class BadRequestError(ClientError):             status = 400
-class UnauthorizedError(ClientError):           status = 401
-class ForbiddenError(ClientError):              status = 403
-class NotFoundError(ClientError):               status = 404
-class ConflictError(ClientError):               status = 409
-class UnprocessableEntityError(ClientError):    status = 422
-class TooManyRequestsError(ClientError):        status = 429
+
+class BadRequestError(ClientError):
+    status = 400
+
+
+class UnauthorizedError(ClientError):
+    status = 401
+
+
+class ForbiddenError(ClientError):
+    status = 403
+
+
+class NotFoundError(ClientError):
+    status = 404
+
+
+class ConflictError(ClientError):
+    status = 409
+
+
+class UnprocessableEntityError(ClientError):
+    status = 422
+
+
+class TooManyRequestsError(ClientError):
+    status = 429
+
 
 # ---- non-HTTP-level errors ----
+
 
 class NetworkError(ApiError):
     """Network-level errors before receiving a response."""
 
+
 class TimeoutError(NetworkError):
     """Connection or read timeout."""
+
 
 class ConnectionFailedError(NetworkError):
     """Network connectivity issues."""
 
+
 class ApiRequestFailed(ApiError):
     """Request exhausted retries and ultimately failed."""
+
 
 _STATUS_TO_ERROR: dict[int, type[ApiError]] = {
     400: BadRequestError,
