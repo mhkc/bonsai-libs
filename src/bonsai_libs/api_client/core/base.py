@@ -12,8 +12,8 @@ import requests
 
 from bonsai_libs.api_client.core.response import ApiResponse
 
-from .exceptions import ApiRequestFailed, UnauthorizedError, raise_for_status
 from .auth import AuthStrategy
+from .exceptions import ApiRequestFailed, UnauthorizedError, raise_for_status
 
 LOG = logging.getLogger(__name__)
 
@@ -87,7 +87,8 @@ class BaseClient(ABC):
                 )
 
                 # 401 error; attempt one forced refresh if implemented and then retry
-                if (resp.status_code == HTTPStatus.UNAUTHORIZED
+                if (
+                    resp.status_code == HTTPStatus.UNAUTHORIZED
                     and self.auth is not None
                     and hasattr(self.auth, "force_refresh")
                     and not did_force_refresh
@@ -121,7 +122,7 @@ class BaseClient(ABC):
                     data = resp.json()
                 else:
                     data = resp.text
-                
+
                 return ApiResponse(
                     status=resp.status_code,
                     data=data,
@@ -137,7 +138,7 @@ class BaseClient(ABC):
                 )
                 self._sleep_with_jitter(attempt)
         raise ApiRequestFailed(f"Request {method} {url} failed")
-    
+
     # Retry and backoff logic
 
     def _sleep_with_jitter(self, attempt: int) -> None:
@@ -168,6 +169,77 @@ class BaseClient(ABC):
         """DELETE request to entrypoint."""
         LOG.debug("Request: DELETE %s; params: %s", path, kwargs)
         return self._request("DELETE", path, **kwargs)
+
+    # ----------------------------
+    # Data specific helper methods
+    # ----------------------------
+
+    def request_json(
+        self,
+        method: RequestMethods,
+        path: str,
+        *,
+        json: dict[str, Any] | list[Any] | None = None,
+        expected_status: Iterable[int] = (HTTPStatus.OK,),
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> ApiResponse:
+        """Helper function for making HTTP requests with JSON data."""
+        final_headers = merge_headers(headers, {"Content-Type": "application/json"})
+        return self._request(
+            method,
+            path,
+            json=json,
+            headers=final_headers,
+            expected_status=expected_status,
+            **kwargs,
+        )
+
+    def request_form(
+        self,
+        method: RequestMethods,
+        path: str,
+        *,
+        data: dict[str, Any] | None = None,
+        expected_status: Iterable[int] = (HTTPStatus.OK,),
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> ApiResponse:
+        """Helper for form data."""
+        final_headers = merge_headers(
+            headers, {"Content-Type": "application/x-www-form-urlencoded"}
+        )
+        return self._request(
+            method,
+            path,
+            data=data,
+            headers=final_headers,
+            expected_status=expected_status,
+            **kwargs,
+        )
+
+    def request_multipart(
+        self,
+        path: str,
+        *,
+        data: dict[str, Any] | None = None,
+        files: dict[str, Any] | None = None,
+        expected_status: Iterable[int] = (HTTPStatus.OK,),
+        headers: dict[str, str] | None = None,
+        **kwargs: Any,
+    ) -> ApiResponse:
+        """Helper for Multi-part data."""
+        # Dont set Content-Type for multipart.
+        final_headers = merge_headers(headers)
+        return self._request(
+            "POST",
+            path,
+            data=data,
+            files=files,
+            headers=final_headers,
+            expected_status=expected_status,
+            **kwargs,
+        )
 
 
 def merge_headers(*dicts: dict[str, str] | None) -> dict[str, str]:

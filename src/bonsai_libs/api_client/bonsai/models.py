@@ -1,14 +1,16 @@
 """API input and response models."""
+
 from datetime import datetime
 from enum import StrEnum
 from pathlib import Path
 from typing import Annotated, Any, Literal, Mapping, TypeAlias
-from pydantic import BaseModel, Field
 
-from bonsai_libs.types.common import Model, IgnoreExtraModelMixin
+from pydantic import BaseModel, EmailStr, Field
+
+from bonsai_libs.types.common import IgnoreExtraModelMixin, Model
 
 Headers: TypeAlias = dict[str, str]
-OpHeaders: TypeAlias = Headers | None 
+OpHeaders: TypeAlias = Headers | None
 
 
 class Visibility(StrEnum):
@@ -67,11 +69,9 @@ class TableMetadataInput(Model):
 
 
 MetaEntryInput = Annotated[
-    DatetimeMetadataEntry
-    | TableMetadataInput
-    | GenericMetadataEntry,
-    Field(discriminator='type')
+    DatetimeMetadataEntry | TableMetadataInput | GenericMetadataEntry, Field(discriminator="type")
 ]
+
 
 class SampleInfoInput(Model, IgnoreExtraModelMixin):  # pylint: disable=too-few-public-methods
     """Defines output structure of group info used for creation."""
@@ -85,9 +85,12 @@ class SampleInfoInput(Model, IgnoreExtraModelMixin):  # pylint: disable=too-few-
 
     # preparation for role based access controll
     owners: list[str] = Field(default_factory=list, description="Owner identifiers (user:<id>)")
-    owner_organizations: list[str] = Field(default_factory=list, description="Organization ids (org:<id>)")
+    owner_organizations: list[str] = Field(
+        default_factory=list, description="Organization ids (org:<id>)"
+    )
     access_groups: list[str] = Field(default_factory=list, description="Optional access groups")
     visibility: Visibility = Visibility.PUBLIC
+
 
 class CreateSampleResponse(BaseModel):
     """Expected response data when creating a sample."""
@@ -170,3 +173,53 @@ class PipelineRunInput(IgnoreExtraModelMixin):
     executed_at: datetime
     assay: str
     pipeline_info: PipelineInfo
+
+
+class GroupBase(BaseModel):
+    """Basic group data."""
+
+    group_id: str
+    display_name: str
+    description: str | None = None
+
+
+class CreateGroupInput(GroupBase):  # pylint: disable=too-few-public-methods
+    """Information required for creating groups."""
+
+    invited_users: list[str] = Field(default_factory=list)
+    allowed_columns: list[str] = Field(default_factory=list)
+    default_preset_id: str | None = None
+
+
+class GroupResponse(GroupBase):  # pylint: disable=too-few-public-methods
+    """Defines output structure of group info."""
+
+    sample_count: int
+
+    default_preset_id: str | None = None
+    presets: list[dict[str, Any]] = Field(default_factory=list)
+
+    table_columns: list[str] = Field(default_factory=list, description="IDs of columns to display.")
+
+
+class UserBase(BaseModel):  # pylint: disable=too-few-public-methods
+    """Basic user info."""
+
+    username: str
+    first_name: str | None = None
+    last_name: str | None = None
+    email: EmailStr
+    disabled: bool = False
+    roles: list[str] = Field(default_factory=list)
+
+
+class CreateUserInput(UserBase):  # pylint: disable=too-few-public-methods
+    """Information required to create a new user."""
+
+    password: str
+
+
+class UserResponse(UserBase):
+    """User information."""
+
+    authentication_method: str
