@@ -19,6 +19,7 @@ from .models import (
     OpHeaders,
     PipelineRunInput,
     SampleInfoInput,
+    SummaryManifestResponse,
     UploadAnalysisResultInput,
     UploadAnalysisResultResponse,
     UploadResultMeta,
@@ -118,6 +119,20 @@ class BonsaiApiClient(BaseClient):
     # ----------------------------
     # Samples
     # ----------------------------
+    
+    def summary_manifest(self, *, headers: OpHeaders = None) -> SummaryManifestResponse:
+        """Get sample summary manifest."""
+
+        try:
+            resp = self.get("/samples/summary/manifest", headers=headers)
+        except ClientError as exc:
+            LOG.error(
+                "Something went wrong fetching the sample summary manifest; %s",
+                exc,
+            )
+            raise
+        return resp.data
+
 
     def create_sample(
         self, sample_info: SampleInfoInput, *, headers: OpHeaders = None

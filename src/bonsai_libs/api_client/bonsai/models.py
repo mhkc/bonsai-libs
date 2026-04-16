@@ -92,6 +92,26 @@ class SampleInfoInput(Model, IgnoreExtraModelMixin):  # pylint: disable=too-few-
     visibility: Visibility = Visibility.PUBLIC
 
 
+class SummaryColumn(BaseModel):
+    """Column information."""
+
+    id: str
+    type: str
+    label: str
+    source: str
+    default_visible: bool = False
+    filterable: bool = True
+    sortable: bool = True
+
+
+class SummaryManifestResponse(BaseModel):
+    """Expected data for a summary manifest."""
+
+    columns: list[dict[str,]] = Field(default_factory=list)
+    etag: str
+    version: str
+
+
 class CreateSampleResponse(BaseModel):
     """Expected response data when creating a sample."""
 
@@ -223,3 +243,6 @@ class UserResponse(UserBase):
     """User information."""
 
     authentication_method: str
+
+
+class 
