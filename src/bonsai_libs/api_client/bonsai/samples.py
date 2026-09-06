@@ -116,9 +116,18 @@ class SamplesMixin(BaseClient):
         return resp.data
 
     def add_annotation_track_to_sample(
-        self, sample_id: str, *, track: GenomicResourceInput, headers: OpHeaders = None,
+        self,
+        sample_id: str,
+        *,
+        track: GenomicResourceInput,
+        force: bool = False,
+        headers: OpHeaders = None,
     ) -> dict[str, Any]:
-        """Add genomic resource to sample."""
+        """Add genomic resource to sample.
+
+        Raises ConflictError (409) if the sample already has resources for
+        this pipeline run and force=False.
+        """
         payload = track.model_dump(exclude_none=True)
         try:
             resp = self.request_json(
@@ -126,6 +135,7 @@ class SamplesMixin(BaseClient):
                 f"samples/{sample_id}/resources",
                 headers=headers,
                 json=payload,
+                params={"force": force},
             )
         except UnauthorizedError:
             LOG.error("Unauthorised when adding a reference genome for sample=%s", sample_id)
@@ -340,6 +350,21 @@ class SamplesMixin(BaseClient):
         resp = self.request_json(
             "GET",
             f"samples/{sample_id}",
+            headers=headers,
+            expected_status=(HTTPStatus.OK,),
+        )
+        return resp.data or {}
+
+    def get_sample_by_external_id(
+        self, external_sample_id: str, *, headers: OpHeaders = None
+    ) -> dict[str, Any]:
+        """Get a sample by the external id assigned by the calling system.
+
+        Raises NotFoundError (404) if no sample has this external_sample_id.
+        """
+        resp = self.request_json(
+            "GET",
+            f"samples/external/{external_sample_id}",
             headers=headers,
             expected_status=(HTTPStatus.OK,),
         )
