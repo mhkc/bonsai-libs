@@ -165,8 +165,8 @@ class TaxLevel(StrEnum):
     S = "species"
 
 
-class GambitQcFlag(StrEnum):
-    """Qc thresholds for Gambit."""
+class GambitcoreQcFlag(StrEnum):
+    """Qc thresholds for gambitcore."""
 
     GREEN = "green"
     AMBER = "amber"

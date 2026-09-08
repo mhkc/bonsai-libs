@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 from bonsai_libs.parse.core.registry import register_result_model
 
-from .enums import GambitQcFlag, AnalysisSoftware, AnalysisType
+from .enums import GambitcoreQcFlag, AnalysisSoftware, AnalysisType
 
 
 @register_result_model(AnalysisSoftware.QUAST, AnalysisType.QC)
@@ -60,7 +60,7 @@ class GambitcoreQcResult(BaseModel):
     assembly_kmers: int | None = None
     species_kmers_mean: int | None = None
     species_kmers_std_dev: int | None = None
-    assembly_qc: GambitQcFlag | None = None
+    assembly_qc: GambitcoreQcFlag | None = None
 
 
 class NanoPlotSummary(BaseModel):

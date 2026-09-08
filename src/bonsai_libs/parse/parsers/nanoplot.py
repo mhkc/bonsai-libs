@@ -133,7 +133,7 @@ def _to_qc_result(data: dict[str, Any]) -> NanoPlotQcResult:
 
 @register_parser(NANOPLOT)
 class NanoplotParser(SingleAnalysisParser):
-    """Gambit core parser."""
+    """Nanoplot parser."""
 
     software = NANOPLOT
     parser_name = "NanoplotParser"
@@ -148,7 +148,7 @@ class NanoplotParser(SingleAnalysisParser):
         source: StreamOrPath,
         **kwargs: Any,
     ) -> NanoPlotQcResult | None:
-        """Parse Gambit core csv and return GambitcoreQcResult."""
+        """Parse nanoplot output and return NanoPlotQcResult."""
 
         raw_data = _read_nanoplot(source)
         return _to_qc_result(raw_data)
