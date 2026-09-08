@@ -4,9 +4,10 @@ import bisect
 from pathlib import Path
 from typing import Any, IO
 
-from bonsai_libs.parse.io.delimited import read_delimited
 from bonsai_libs.parse.core.base import SingleAnalysisParser, StreamOrPath
 from bonsai_libs.parse.core.registry import register_parser
+from bonsai_libs.parse.io.delimited import read_delimited
+from bonsai_libs.parse.io.utils import ensure_text_stream
 from bonsai_libs.parse.models.enums import AnalysisSoftware, AnalysisType
 from bonsai_libs.parse.models.qc import PostAlignQcResult
 
@@ -62,7 +63,7 @@ def _parse_stats_file(
         with open(source, encoding="utf-8") as fh:
             _process(fh)
     else:
-        _process(source)
+        _process(ensure_text_stream(source))
 
     cov.sort()
     return sn, cov
