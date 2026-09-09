@@ -3,9 +3,9 @@
 import logging
 from typing import Any
 
+from bonsai_libs.parse.io.delimited import read_delimited
 from bonsai_libs.parse.core.base import SingleAnalysisParser, StreamOrPath
 from bonsai_libs.parse.core.registry import register_parser
-from bonsai_libs.parse.io.delimited import read_delimited
 from bonsai_libs.parse.models.enums import AnalysisSoftware, AnalysisType
 from bonsai_libs.parse.models.typing import TypingResultEmm
 

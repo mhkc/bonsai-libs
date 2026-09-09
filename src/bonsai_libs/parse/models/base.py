@@ -2,12 +2,11 @@
 
 from typing import Any, Collection, Mapping, Self, TypeAlias
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from bonsai_libs.parse.core.registry import register_result_model
 from bonsai_libs.parse.exceptions import AbsentResultError, ParserError
 from bonsai_libs.parse.models.enums import AnalysisSoftware
-from bonsai_libs.types.common import Model as RWModel
 
 from .enums import (
     AnalysisType,
@@ -24,6 +23,15 @@ from .enums import (
 )
 
 ParseImplOut: TypeAlias = Mapping[AnalysisType, Any]
+
+
+class RWModel(BaseModel):  # pylint: disable=too-few-public-methods
+    """Base model for read/write operations."""
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        use_enum_values=True,
+    )
 
 
 class ResultEnvelope(BaseModel):

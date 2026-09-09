@@ -5,9 +5,9 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field, field_validator
 
 from bonsai_libs.parse.core.registry import register_result_model
-from bonsai_libs.types.common import Model as RWModel
 
-from .enums import AnalysisSoftware, AnalysisType, VariantSubType
+from .base import RWModel
+from .enums import VariantSubType, AnalysisSoftware, AnalysisType
 from .typing import LineageMixin, TypingResultMlst
 
 

@@ -1,13 +1,12 @@
 """Bracken specific data models."""
 
 from typing import TypeAlias
-
 from pydantic import Field, TypeAdapter
 
 from bonsai_libs.parse.core.registry import register_result_model
 
 from .base import BaseSpeciesPrediction
-from .enums import AnalysisSoftware, AnalysisType, TaxLevel
+from .enums import TaxLevel, AnalysisSoftware, AnalysisType
 
 
 class BrackenSpeciesPrediction(BaseSpeciesPrediction):

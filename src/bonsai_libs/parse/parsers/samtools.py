@@ -3,9 +3,9 @@
 from itertools import chain
 from typing import Any
 
+from bonsai_libs.parse.io.delimited import read_delimited
 from bonsai_libs.parse.core.base import SingleAnalysisParser, StreamOrPath
 from bonsai_libs.parse.core.registry import register_parser
-from bonsai_libs.parse.io.delimited import read_delimited
 from bonsai_libs.parse.models.enums import AnalysisSoftware, AnalysisType
 from bonsai_libs.parse.models.qc import ContigCoverage, SamtoolsCoverageQcResult
 
@@ -41,11 +41,12 @@ def _to_contig_result(row: dict[str, Any]) -> ContigCoverage:
     )
 
 
-@register_parser(SAMTOOLS)
+@register_parser(SAMTOOLS, subcommand="coverage")
 class SamtoolsCovParser(SingleAnalysisParser):
-    """Gambit core parser."""
+    """Parse samtools coverage output into a SamtoolsCoverageQcResult."""
 
     software = SAMTOOLS
+    subcommand = "coverage"
     parser_name = "SamtoolsCovParser"
     parser_version = 1
     schema_version = 1
@@ -60,7 +61,7 @@ class SamtoolsCovParser(SingleAnalysisParser):
         strict: bool = True,
         **kwargs: Any,
     ) -> SamtoolsCoverageQcResult | None:
-        """Parse Gambit core csv and return GambitcoreQcResult."""
+        """Parse samtools coverage tsv and return SamtoolsCoverageQcResult."""
 
         first = self._get_first_normalized_row(
             source,

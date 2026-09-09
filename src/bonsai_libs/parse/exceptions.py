@@ -1,4 +1,4 @@
-"""Common errors for bonsai_libs.parse."""
+"""Common errors"""
 
 from typing import Any
 
@@ -9,6 +9,10 @@ class ParserError(Exception):
     def __init__(self, message: str, *, context: dict[str, Any] | None = None):
         super().__init__(message)
         self.context = context or {}
+
+
+class DataFormatError(ParserError):
+    """Generic data/serialization errors (IO-level)."""
 
 
 class InvalidDataFormat(ParserError):

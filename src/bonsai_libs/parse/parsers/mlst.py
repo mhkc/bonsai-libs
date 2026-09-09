@@ -2,11 +2,11 @@
 
 from typing import Any
 
+from bonsai_libs.parse.io.delimited import is_nullish
+from bonsai_libs.parse.io.json import read_json
 from bonsai_libs.parse.core.base import SingleAnalysisParser
 from bonsai_libs.parse.core.registry import register_parser
 from bonsai_libs.parse.exceptions import AbsentResultError
-from bonsai_libs.parse.io.delimited import is_nullish
-from bonsai_libs.parse.io.json import read_json
 from bonsai_libs.parse.models.enums import AnalysisSoftware, AnalysisType
 from bonsai_libs.parse.models.typing import TypingResultMlst
 

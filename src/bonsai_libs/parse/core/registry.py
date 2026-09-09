@@ -47,7 +47,24 @@ def _normalize_version(version: str | Version) -> Version:
     raise TypeError(f"Version must be str or Version, got {type(version).__name__}")
 
 
-def register_parser(software: str, min_version: str | None = None, max_version: str | None = None):
+def _registry_key(software: str, subcommand: str | None) -> str:
+    """Build the registry lookup key from software and optional subcommand.
+
+    When a subcommand is given the key becomes 'software.subcommand'
+    (e.g. 'samtools.coverage', 'samtools.stats'), forming a single composite
+    key — not two separate registrations — so multiple parsers can share the
+    same software name without colliding.
+    """
+    return f"{software}.{subcommand}" if subcommand else software
+
+
+def register_parser(
+    software: str,
+    min_version: str | None = None,
+    max_version: str | None = None,
+    *,
+    subcommand: str | None = None,
+):
     """Decorator to register a parser for a range of versions.
 
     Null values means either undefined or no upper range.
@@ -61,15 +78,17 @@ def register_parser(software: str, min_version: str | None = None, max_version: 
         new_min = _normalize_version(min_version)
         new_max = _normalize_version(max_version)
 
+        key = _registry_key(software, subcommand)
+
         # Fetch existing ranges for this software
-        existing_ranges = _PARSER_REGISTRY.get(software, [])
+        existing_ranges = _PARSER_REGISTRY.get(key, [])
 
         # Check for overlapping version ranges
         for span in existing_ranges:
             if not (new_max < span.min_version or new_min > span.max_version):
                 # Ranges overlap → safety error
                 raise ValueError(
-                    f"Cannot register parser {cls.__name__} for software '{software}' "
+                    f"Cannot register parser {cls.__name__} for software '{key}' "
                     f"with version range [{new_min}, {new_max}] because it overlaps "
                     f"with existing parser {span.entry.__name__} range "
                     f"[{span.min_version}, {span.max_version}]."
@@ -81,30 +100,34 @@ def register_parser(software: str, min_version: str | None = None, max_version: 
             max_version=new_max,
             entry=cls,
         )
-        _PARSER_REGISTRY.setdefault(software, []).append(v_range)
+        _PARSER_REGISTRY.setdefault(key, []).append(v_range)
 
         return cls
 
     return wrapper
 
 
-def get_parser(software: str, *, version: str) -> ParserRegistryEntry:
+def get_parser(
+    software: str, *, version: str, subcommand: str | None = None
+) -> ParserRegistryEntry:
     """Get parser from registry."""
     if not isinstance(software, str):
         raise TypeError(f"`software` must be str, got {type(software).__name__}")
 
-    if software not in registered_softwares():
-        raise UnsupportedSoftwareError(f"No parser registered for software: {software}")
+    key = _registry_key(software, subcommand)
+
+    if key not in registered_softwares():
+        raise UnsupportedSoftwareError(f"No parser registered for software: {key}")
 
     # Normalize version to PkgVersion
     v = _normalize_version(version)
 
-    for span in sorted(_PARSER_REGISTRY[software], key=lambda r: (r.min_version, r.max_version)):
+    for span in sorted(_PARSER_REGISTRY[key], key=lambda r: (r.min_version, r.max_version)):
         if span.min_version <= v <= span.max_version:
             return span.entry
 
     # Return the correct error.
-    raise UnsupportedVersionError(f"No parser available for software '{software}' version {v}")
+    raise UnsupportedVersionError(f"No parser available for software '{key}' version {v}")
 
 
 def registered_softwares() -> list[str]:
@@ -137,6 +160,7 @@ def run_parser(
     *,
     version: str,
     data: StreamOrPath,
+    subcommand: str | None = None,
     want: set[AnalysisType] | None = None,
     parser_init: dict[str, Any] | None = None,
     **parse_kwargs: Any,
@@ -146,7 +170,7 @@ def run_parser(
     if not isinstance(software, (AnalysisSoftware, str)):
         raise ValueError(f"Invalid input for 'run_parser', got {type(software)}")
 
-    entry = get_parser(software, version=version)
+    entry = get_parser(software, version=version, subcommand=subcommand)
     parse_fn = resolve_parser(entry, **(parser_init or {}))
     ev = parse_fn(data, want=want, **parse_kwargs)
     # add version to results

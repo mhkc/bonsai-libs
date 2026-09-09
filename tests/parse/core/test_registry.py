@@ -1,24 +1,23 @@
 """Tests for parser and result-model registry behavior."""
 
-from typing import Any
-
 import pytest
 from packaging.version import Version
+from typing import Any
 from pydantic import BaseModel
 
+from bonsai_libs.parse.exceptions import InvalidDataFormat, UnsupportedVersionError
 from bonsai_libs.parse.core.registry import (
-    _PARSER_REGISTRY,
-    _RESULT_MODEL_REGISTRY,
     VersionRange,
     _normalize_version,
+    register_parser,
+    register_result_model,
+    register_result_element_models,
+    _PARSER_REGISTRY,
+    _RESULT_MODEL_REGISTRY,
     get_parser,
     get_result_model,
     hydrate_result,
-    register_parser,
-    register_result_element_models,
-    register_result_model,
 )
-from bonsai_libs.parse.exceptions import InvalidDataFormat, UnsupportedVersionError
 
 # ---------------------------------------------------------------------------
 # Dummy Classes

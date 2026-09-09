@@ -1,14 +1,14 @@
 """Mykrobe specific data models."""
 
-from dataclasses import dataclass
 from typing import TypeAlias
+from dataclasses import dataclass
 
 from pydantic import Field, TypeAdapter
 
 from bonsai_libs.parse.core.registry import register_result_model
 
 from .base import BaseSpeciesPrediction
-from .enums import AnalysisSoftware, AnalysisType
+from .enums import AnalysisType, AnalysisSoftware
 
 
 class MykrobeSpeciesPrediction(BaseSpeciesPrediction):

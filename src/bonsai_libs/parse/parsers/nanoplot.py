@@ -4,15 +4,11 @@ import re
 from pathlib import Path
 from typing import Any, Literal
 
+from bonsai_libs.parse.io.utils import ensure_text_stream
 from bonsai_libs.parse.core.base import SingleAnalysisParser, StreamOrPath
 from bonsai_libs.parse.core.registry import register_parser
-from bonsai_libs.parse.io.utils import ensure_text_stream
 from bonsai_libs.parse.models.enums import AnalysisSoftware, AnalysisType
-from bonsai_libs.parse.models.qc import (
-    NanoPlotQcCutoff,
-    NanoPlotQcResult,
-    NanoPlotSummary,
-)
+from bonsai_libs.parse.models.qc import NanoPlotQcCutoff, NanoPlotQcResult, NanoPlotSummary
 
 from .utils import safe_float, safe_int, safe_percent
 
@@ -137,7 +133,7 @@ def _to_qc_result(data: dict[str, Any]) -> NanoPlotQcResult:
 
 @register_parser(NANOPLOT)
 class NanoplotParser(SingleAnalysisParser):
-    """Gambit core parser."""
+    """Nanoplot parser."""
 
     software = NANOPLOT
     parser_name = "NanoplotParser"
@@ -152,7 +148,7 @@ class NanoplotParser(SingleAnalysisParser):
         source: StreamOrPath,
         **kwargs: Any,
     ) -> NanoPlotQcResult | None:
-        """Parse Gambit core csv and return GambitcoreQcResult."""
+        """Parse nanoplot output and return NanoPlotQcResult."""
 
         raw_data = _read_nanoplot(source)
         return _to_qc_result(raw_data)

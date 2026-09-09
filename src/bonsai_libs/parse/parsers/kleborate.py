@@ -8,7 +8,10 @@ from enum import StrEnum
 from itertools import chain
 from typing import Any, Callable, Literal, Mapping
 
+from bonsai_libs.parse.io.delimited import DelimiterRow, is_nullish, normalize_row, read_delimited
+from bonsai_libs.parse.io.types import StreamOrPath
 from bonsai_libs.parse.core.base import BaseParser
+from bonsai_libs.parse.models.base import ParseImplOut
 from bonsai_libs.parse.core.envelope import (
     envelope_absent,
     envelope_error,
@@ -17,19 +20,7 @@ from bonsai_libs.parse.core.envelope import (
 )
 from bonsai_libs.parse.core.registry import register_parser
 from bonsai_libs.parse.exceptions import AbsentResultError, ParserError
-from bonsai_libs.parse.io.delimited import (
-    DelimiterRow,
-    is_nullish,
-    normalize_row,
-    read_delimited,
-)
-from bonsai_libs.parse.io.types import StreamOrPath
-from bonsai_libs.parse.models.base import (
-    ElementTypeResult,
-    ParseImplOut,
-    PhenotypeInfo,
-    ResultEnvelope,
-)
+from bonsai_libs.parse.models.base import ElementTypeResult, PhenotypeInfo, ResultEnvelope
 from bonsai_libs.parse.models.enums import (
     AnalysisSoftware,
     AnalysisType,
@@ -40,10 +31,7 @@ from bonsai_libs.parse.models.enums import (
     VariantSubType,
     VariantType,
 )
-from bonsai_libs.parse.models.hamronization import (
-    HamronizationEntries,
-    HamronizationEntry,
-)
+from bonsai_libs.parse.models.hamronization import HamronizationEntries, HamronizationEntry
 from bonsai_libs.parse.models.kleborate import (
     KleborateEtScore,
     KleborateKaptiveLocus,

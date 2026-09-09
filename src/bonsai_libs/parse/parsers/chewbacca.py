@@ -2,8 +2,6 @@
 
 from typing import Any, Mapping
 
-from bonsai_libs.parse.core.base import SingleAnalysisParser, warn_if_extra_rows
-from bonsai_libs.parse.core.registry import register_parser
 from bonsai_libs.parse.io.delimited import (
     DelimiterRow,
     canonical_header,
@@ -11,11 +9,9 @@ from bonsai_libs.parse.io.delimited import (
     normalize_row,
     read_delimited,
 )
-from bonsai_libs.parse.models.enums import (
-    AnalysisSoftware,
-    AnalysisType,
-    ChewbbacaErrors,
-)
+from bonsai_libs.parse.core.base import SingleAnalysisParser, warn_if_extra_rows
+from bonsai_libs.parse.core.registry import register_parser
+from bonsai_libs.parse.models.enums import AnalysisSoftware, AnalysisType, ChewbbacaErrors
 from bonsai_libs.parse.models.typing import TypingResultCgMlst
 
 from .utils import safe_int

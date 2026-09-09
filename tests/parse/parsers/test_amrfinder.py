@@ -8,7 +8,7 @@ from bonsai_libs.parse.models.base import (
     ResultEnvelope,
 )
 from bonsai_libs.parse.models.enums import AnalysisType
-from bonsai_libs.parse.parsers.amrfinder import AmrFinderParser
+from bonsai_libs.parse.parsers.amrfinder import AmrFinderParser, AmrFinderV3Parser
 
 EXPECTED_RESULT = [
     (
@@ -34,9 +34,9 @@ EXPECTED_AMRFINDER_RESULT = [
     (
         "saureus_amrfinder_path",
         (
-            14,  # virulence genes
+            15,  # virulence genes
             8,  # amr genes
-            3,  # amr variants
+            2,  # amr variants
             (
                 "beta-lactam",
                 "fosfomycin",
@@ -92,3 +92,73 @@ def test_amrfinder_parser_filter(saureus_amrfinder_path):
 
     res = result.results[selected_result]
     assert res.status == "parsed"
+
+
+def test_amrfinder_parser_v3_format(saureus_amrfinder_v3_path):
+    """AMRFinder v3 column headers are parsed correctly."""
+    parser = AmrFinderV3Parser()
+    result = parser.parse(source=saureus_amrfinder_v3_path)
+
+    assert isinstance(result, ParserOutput)
+    assert all(at in result.results for at in parser.produces)
+
+    vir = result.results[AnalysisType.VIRULENCE]
+    assert isinstance(vir, ResultEnvelope)
+    assert isinstance(vir.value, ElementTypeResult)
+    assert len(vir.value.genes) == 14
+
+    amr = result.results[AnalysisType.AMR]
+    assert isinstance(amr, ResultEnvelope)
+    assert isinstance(amr.value, ElementTypeResult)
+    assert len(amr.value.genes) == 8
+    assert len(amr.value.variants) == 3
+
+
+def test_amrfinder_parser_v4_format(saureus_amrfinder_path):
+    """AMRFinder v4 column headers are parsed correctly."""
+    parser = AmrFinderParser()
+    result = parser.parse(source=saureus_amrfinder_path)
+
+    assert isinstance(result, ParserOutput)
+    assert all(at in result.results for at in parser.produces)
+
+    vir = result.results[AnalysisType.VIRULENCE]
+    assert isinstance(vir, ResultEnvelope)
+    assert isinstance(vir.value, ElementTypeResult)
+    assert len(vir.value.genes) == 15
+
+    amr = result.results[AnalysisType.AMR]
+    assert isinstance(amr, ResultEnvelope)
+    assert isinstance(amr.value, ElementTypeResult)
+    assert len(amr.value.genes) == 8
+    assert len(amr.value.variants) == 2
+
+
+def test_amrfinder_parser_v4_stx_type_subtype(ecoli_amrfinder_v4_stx_path):
+    """AMRFinder v4 rows with Subtype=STX_TYPE (stx operon calls) parse without error."""
+    parser = AmrFinderParser()
+    result = parser.parse(source=ecoli_amrfinder_v4_stx_path)
+
+    assert isinstance(result, ParserOutput)
+
+    vir = result.results[AnalysisType.VIRULENCE]
+    assert isinstance(vir, ResultEnvelope)
+    assert vir.status == "parsed"
+    assert isinstance(vir.value, ElementTypeResult)
+    assert len(vir.value.genes) == 24
+
+    stx_genes = {gene.gene_symbol: gene for gene in vir.value.genes}
+    operon = stx_genes["stx2c_operon"]
+    assert operon.element_subtype == "STX_TYPE"
+    assert operon.sequence_name == "stx2c operon"
+
+    # the individual stx subunit calls still carry the plain VIRULENCE subtype
+    assert stx_genes["stxA2"].element_subtype == "VIRULENCE"
+    assert stx_genes["stxB2"].element_subtype == "VIRULENCE"
+
+    amr = result.results[AnalysisType.AMR]
+    assert isinstance(amr, ResultEnvelope)
+    assert amr.status == "parsed"
+    assert isinstance(amr.value, ElementTypeResult)
+    assert len(amr.value.genes) == 4
+    assert len(amr.value.variants) == 0

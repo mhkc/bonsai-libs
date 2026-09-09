@@ -5,9 +5,6 @@ import re
 from dataclasses import asdict
 from typing import Any, Callable, TypeAlias
 
-from bonsai_libs.parse.core.base import BaseParser
-from bonsai_libs.parse.core.envelope import run_as_envelope
-from bonsai_libs.parse.core.registry import register_parser
 from bonsai_libs.parse.io.delimited import (
     DelimiterRow,
     canonical_header,
@@ -16,9 +13,12 @@ from bonsai_libs.parse.io.delimited import (
     read_delimited,
 )
 from bonsai_libs.parse.io.types import StreamOrPath
+from bonsai_libs.parse.core.base import BaseParser
+from bonsai_libs.parse.models.base import ParseImplOut
+from bonsai_libs.parse.core.envelope import run_as_envelope
+from bonsai_libs.parse.core.registry import register_parser
 from bonsai_libs.parse.models.base import (
     ElementTypeResult,
-    ParseImplOut,
     PhenotypeInfo,
     SoupVersion,
     VariantBase,
@@ -33,8 +33,8 @@ from bonsai_libs.parse.models.enums import (
     VariantType,
 )
 from bonsai_libs.parse.models.mykrobe import (
-    MykrobeSpeciesPrediction,
     MykrobeSpeciesPredictions,
+    MykrobeSpeciesPrediction,
     SRProfile,
 )
 from bonsai_libs.parse.models.typing import ResultLineageBase

@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 from bonsai_libs.parse.core.registry import register_result_model
 
-from .enums import AnalysisSoftware, AnalysisType, GambitQcFlag
+from .enums import GambitcoreQcFlag, AnalysisSoftware, AnalysisType
 
 
 @register_result_model(AnalysisSoftware.QUAST, AnalysisType.QC)
@@ -28,15 +28,17 @@ class PostAlignQcResult(BaseModel):
 
     ins_size: float | None = None
     ins_size_dev: float | None = None
-    mean_cov: float
-    pct_above_x: dict[str, float]
+    mean_cov: float | None = None
+    pct_above_x: dict[str, float] | None = None
     n_reads: int
-    n_mapped_reads: int
+    n_mapped_reads: int | None = None
     n_read_pairs: int
+    n_dup_reads: int | None = None
+    dup_pct: float | None = None
     coverage_uniformity: float | None = None
-    quartile1: float
-    median_cov: float
-    quartile3: float
+    quartile1: float | None = None
+    median_cov: float | None = None
+    quartile3: float | None = None
 
 
 class GenomeCompleteness(BaseModel):
@@ -45,7 +47,7 @@ class GenomeCompleteness(BaseModel):
     n_missing: int = Field(..., description="Number of missing cgMLST alleles")
 
 
-@register_result_model(AnalysisSoftware.GAMBIT, AnalysisType.QC)
+@register_result_model(AnalysisSoftware.GAMBITCORE, AnalysisType.QC)
 class GambitcoreQcResult(BaseModel):
     """Gambitcore genome completeness QC metrics."""
 
@@ -58,7 +60,7 @@ class GambitcoreQcResult(BaseModel):
     assembly_kmers: int | None = None
     species_kmers_mean: int | None = None
     species_kmers_std_dev: int | None = None
-    assembly_qc: GambitQcFlag | None = None
+    assembly_qc: GambitcoreQcFlag | None = None
 
 
 class NanoPlotSummary(BaseModel):

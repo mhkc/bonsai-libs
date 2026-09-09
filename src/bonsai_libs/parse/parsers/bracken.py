@@ -2,14 +2,11 @@
 
 from typing import Any
 
+from bonsai_libs.parse.io.delimited import read_delimited
 from bonsai_libs.parse.core.base import SingleAnalysisParser, StreamOrPath
 from bonsai_libs.parse.core.registry import register_parser
 from bonsai_libs.parse.exceptions import ParserError
-from bonsai_libs.parse.io.delimited import read_delimited
-from bonsai_libs.parse.models.bracken import (
-    BrackenSpeciesPrediction,
-    BrackenSpeciesPredictions,
-)
+from bonsai_libs.parse.models.bracken import BrackenSpeciesPrediction, BrackenSpeciesPredictions
 from bonsai_libs.parse.models.enums import AnalysisSoftware, AnalysisType, TaxLevel
 
 from .utils import safe_float, safe_int

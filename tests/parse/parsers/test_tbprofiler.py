@@ -1,10 +1,6 @@
 """Test parsing of TbProfiler results."""
 
-from bonsai_libs.parse.models.base import (
-    ElementTypeResult,
-    ParserOutput,
-    ResultEnvelope,
-)
+from bonsai_libs.parse.models.base import ElementTypeResult, ParserOutput, ResultEnvelope
 from bonsai_libs.parse.models.enums import AnalysisType
 from bonsai_libs.parse.models.typing import LineageInformation
 from bonsai_libs.parse.parsers.tbprofiler import TbProfilerParser

@@ -1,14 +1,14 @@
-"""Test gambit parsing."""
+"""Test gambitcore parsing."""
 
 from bonsai_libs.parse.models.base import ParserOutput, ResultEnvelope
 from bonsai_libs.parse.models.enums import AnalysisType
 from bonsai_libs.parse.models.qc import GambitcoreQcResult
-from bonsai_libs.parse.parsers.gambit import GambitCoreParser
+from bonsai_libs.parse.parsers.gambitcore import GambitcoreParser
 
 
-def test_gambit_parser(ecoli_gambitcore_path):
-    """Test gambit parser."""
-    parser = GambitCoreParser()
+def test_gambitcore_parser(ecoli_gambitcore_path):
+    """Test gambitcore parser."""
+    parser = GambitcoreParser()
     result = parser.parse(ecoli_gambitcore_path)
 
     # test that result is method index

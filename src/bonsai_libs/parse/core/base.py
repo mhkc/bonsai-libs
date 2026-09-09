@@ -5,6 +5,8 @@ from collections.abc import Callable, Iterator
 from logging import Logger, getLogger
 from typing import Any, Mapping, Type, TypeVar
 
+from bonsai_libs.parse.io.delimited import read_delimited, validate_fields
+from bonsai_libs.parse.io.types import DelimiterRow, StreamOrPath
 from bonsai_libs.parse.core.envelope import (
     default_empty_predicate,
     envelope_absent,
@@ -12,8 +14,6 @@ from bonsai_libs.parse.core.envelope import (
     run_as_envelope,
 )
 from bonsai_libs.parse.exceptions import UnsupportedAnalysisTypeError
-from bonsai_libs.parse.io.delimited import read_delimited, validate_fields
-from bonsai_libs.parse.io.types import DelimiterRow, StreamOrPath
 from bonsai_libs.parse.models.enums import AnalysisType, ResultStatus
 
 T = TypeVar("T")
@@ -174,7 +174,7 @@ class BaseParser(ABC):
     ) -> Mapping[str, Any] | None:
         """Convenience: read, validate and normalize a single delimited row.
 
-        ``column_map`` is passed through to :func:`bonsai_libs.io.delimited.normalize_row`.
+        ``column_map`` is passed through to :func:`bonsai_libs.parse.io.delimited.normalize_row`.
         If the source is empty this returns ``None``.  Extra rows are consumed up
         to ``max_consume`` and a warning emitted via :meth:`log_warning`.
         """
@@ -212,6 +212,12 @@ class BaseParser(ABC):
 
 class SingleAnalysisParser(BaseParser):
     """Abtracted parser class for softwares that produces exactly one AnalysisType"""
+
+    subcommand: str | None = None
+    """Optional subcommand identifier used when one software binary produces
+    multiple distinct output formats (e.g. 'coverage' and 'stats' for samtools).
+    The registry uses (software, subcommand) as a composite key so each output
+    type can have its own parser class."""
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)

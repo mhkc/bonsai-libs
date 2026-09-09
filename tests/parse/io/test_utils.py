@@ -1,7 +1,6 @@
 """Test helper functions."""
 
 from pathlib import Path
-
 from bonsai_libs.parse.io.utils import ensure_text_stream
 
 

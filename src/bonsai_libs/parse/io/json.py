@@ -3,7 +3,7 @@
 import json
 from typing import Any, Mapping
 
-from bonsai_libs.parse.exceptions import InvalidDataFormat
+from bonsai_libs.parse.exceptions import DataFormatError
 
 from .types import StreamOrPath
 from .utils import ensure_text_stream

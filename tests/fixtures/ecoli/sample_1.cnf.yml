@@ -21,7 +21,8 @@ software_info:
   - ./virulencefinder_meta.json
 kraken: ./bracken.out
 quast: ./quast.tsv
-postalnqc: ./bwa.qc
+samtools_bedcov: /path/to/bedcov.txt
+samtools_stats: /path/to/stats.txt
 resfinder: ./resfinder.json
 virulencefinder: ./virulencefinder.json
 amrfinder: ./amrfinder.out

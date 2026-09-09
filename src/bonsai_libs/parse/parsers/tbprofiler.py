@@ -2,18 +2,14 @@
 
 from typing import Any, Sequence
 
+from bonsai_libs.parse.io.json import read_json
+from bonsai_libs.parse.io.types import StreamOrPath
 from bonsai_libs.parse.core.base import BaseParser
+from bonsai_libs.parse.models.base import ParseImplOut
 from bonsai_libs.parse.core.envelope import run_as_envelope
 from bonsai_libs.parse.core.registry import register_parser
 from bonsai_libs.parse.exceptions import AbsentResultError
-from bonsai_libs.parse.io.json import read_json
-from bonsai_libs.parse.io.types import StreamOrPath
-from bonsai_libs.parse.models.base import (
-    ElementTypeResult,
-    ParseImplOut,
-    PhenotypeInfo,
-    SoupVersion,
-)
+from bonsai_libs.parse.models.base import ElementTypeResult, PhenotypeInfo, SoupVersion
 from bonsai_libs.parse.models.enums import (
     AnalysisSoftware,
     AnalysisType,

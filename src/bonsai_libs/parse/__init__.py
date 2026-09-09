@@ -2,13 +2,12 @@
 
 from importlib import import_module
 from pathlib import Path
-
 from .core.registry import (
     get_parser,
-    hydrate_result,
     registered_softwares,
     registered_version_ranges,
     run_parser,
+    hydrate_result,
 )
 
 # auto-import all modules under parse/parsers to ensure that all parsers are registered

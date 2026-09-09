@@ -7,14 +7,9 @@ import logging
 from itertools import chain
 from typing import Any, Literal, TypeAlias
 
+from bonsai_libs.parse.io.delimited import DelimiterRow, is_nullish, normalize_row, read_delimited
 from bonsai_libs.parse.core.base import SingleAnalysisParser, StreamOrPath
 from bonsai_libs.parse.core.registry import register_parser
-from bonsai_libs.parse.io.delimited import (
-    DelimiterRow,
-    is_nullish,
-    normalize_row,
-    read_delimited,
-)
 from bonsai_libs.parse.models.base import SoupVersion
 from bonsai_libs.parse.models.enums import AnalysisSoftware, AnalysisType, SoupType
 from bonsai_libs.parse.models.hamronization import (

@@ -4,7 +4,7 @@ import pytest
 
 from bonsai_libs.parse.models.base import ParserOutput, ResultEnvelope
 from bonsai_libs.parse.models.bracken import BrackenSpeciesPrediction
-from bonsai_libs.parse.models.enums import AnalysisType, TaxLevel
+from bonsai_libs.parse.models.enums import TaxLevel, AnalysisType
 from bonsai_libs.parse.parsers.bracken import BrackenParser, to_taxlevel
 
 EXPECTED_PARSER_RESULT = [

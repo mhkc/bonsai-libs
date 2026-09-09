@@ -1,9 +1,9 @@
 """Test reading json files."""
 
 import io
-import json
 from pathlib import Path
 
+import json
 from bonsai_libs.parse.io.json import read_json
 
 

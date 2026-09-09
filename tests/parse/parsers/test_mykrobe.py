@@ -1,11 +1,7 @@
 """Test Mykrobe parser."""
 
-from bonsai_libs.parse.models.base import (
-    ElementTypeResult,
-    ParserOutput,
-    ResultEnvelope,
-)
 from bonsai_libs.parse.models.enums import AnalysisType
+from bonsai_libs.parse.models.base import ElementTypeResult, ParserOutput, ResultEnvelope
 from bonsai_libs.parse.models.typing import ResultLineageBase
 from bonsai_libs.parse.parsers.mykrobe import MykrobeParser
 

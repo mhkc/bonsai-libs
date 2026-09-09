@@ -10,19 +10,21 @@ class AnalysisSoftware(StrEnum):
     BRACKEN = "bracken"
     CHEWBBACA = "chewbbaca"
     EMMTYPER = "emmtyper"
-    GAMBIT = "gambit"
+    GAMBITCORE = "gambitcore"
     HAMRONIZATION = "hAMRonization"
     KLEBORATE = "kleborate"
+    KRAKEN = "kraken"
     MYKROBE = "mykrobe"
     MLST = "mlst"
     NANOPLOT = "nanoplot"
+    PLASMIDFINDER = "plasmidfinder"
     POSTALIGNQC = "postalignqc"
     QUAST = "quast"
     RESFINDER = "resfinder"
     SAMTOOLS = "samtools"
     SCCMECTYPER = "sccmectyper"
     SEROTYPEFINDER = "serotypefinder"
-    SHIGAPASS = "shigapass"
+    SHIGATYPER = "shigatyper"
     SPATYPER = "spatyper"
     TBPROFILER = "tbprofiler"
     VIRULENCEFINDER = "virulencefinder"
@@ -136,6 +138,7 @@ class ElementVirulenceSubtype(StrEnum):
     VIR = "VIRULENCE"
     ANTIGEN = "ANTIGEN"
     TOXIN = "TOXIN"
+    STX_TYPE = "STX_TYPE"
 
 
 class AnnotationType(StrEnum):
@@ -162,8 +165,8 @@ class TaxLevel(StrEnum):
     S = "species"
 
 
-class GambitQcFlag(StrEnum):
-    """Qc thresholds for Gambit."""
+class GambitcoreQcFlag(StrEnum):
+    """Qc thresholds for gambitcore."""
 
     GREEN = "green"
     AMBER = "amber"

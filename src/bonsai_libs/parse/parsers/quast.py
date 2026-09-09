@@ -2,13 +2,9 @@
 
 from typing import Any
 
-from bonsai_libs.parse.core.base import (
-    SingleAnalysisParser,
-    StreamOrPath,
-    warn_if_extra_rows,
-)
-from bonsai_libs.parse.core.registry import register_parser
 from bonsai_libs.parse.io.delimited import DelimiterRow, is_nullish, read_delimited
+from bonsai_libs.parse.core.base import SingleAnalysisParser, StreamOrPath, warn_if_extra_rows
+from bonsai_libs.parse.core.registry import register_parser
 from bonsai_libs.parse.models.enums import AnalysisSoftware, AnalysisType
 from bonsai_libs.parse.models.qc import QuastQcResult
 
@@ -91,7 +87,7 @@ class QuastParser(SingleAnalysisParser):
         strict_columns: bool = False,
         **kwargs: Any,
     ) -> QuastQcResult | None:
-        """Parse shigapass predictions and return a ShigaTypingMethodIndex."""
+        """Parse Quast output and return a QuastQcResult."""
         # read and normalise a single row; handles empty file and column
         # validation internally
         first = self._get_first_normalized_row(

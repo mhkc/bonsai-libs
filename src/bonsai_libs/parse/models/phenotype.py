@@ -2,8 +2,8 @@
 
 from pydantic import Field
 
-from bonsai_libs.parse.core.registry import register_result_element_models
 from bonsai_libs.parse.models.enums import AnalysisSoftware, AnalysisType
+from bonsai_libs.parse.core.registry import register_result_element_models
 
 from .base import DatabaseReferenceMixin, GeneBase, PhenotypeModelMixin, VariantBase
 from .enums import SequenceStrand
