@@ -82,7 +82,7 @@ class SamplesMixin(BaseClient):
         self,
         sample_id: str,
         *,
-        reference_genome_id: str,
+        reference_genome_accession: str,
         headers: OpHeaders = None,
     ) -> dict[str, Any]:
         """Associate a reference genome with a sample.
@@ -93,7 +93,7 @@ class SamplesMixin(BaseClient):
                 "PUT",
                 f"samples/{sample_id}/reference-genome",
                 headers=headers,
-                json={"reference_genome_id": reference_genome_id},
+                json={"reference_genome_accession": reference_genome_accession},
                 expected_status=(HTTPStatus.OK, HTTPStatus.NOT_MODIFIED),
             )
         except UnauthorizedError:
@@ -101,15 +101,15 @@ class SamplesMixin(BaseClient):
             raise
         except NotModifiedError:
             LOG.warning(
-                "Sample %s already associated with genome id=%s",
+                "Sample %s already associated with genome accession=%s",
                 sample_id,
-                reference_genome_id,
+                reference_genome_accession,
             )
             raise
         except ClientError:
             LOG.error(
-                "Something went wrong when associating reference genome id=%s to sample=%s",
-                reference_genome_id,
+                "Something went wrong when associating reference genome accession=%s to sample=%s",
+                reference_genome_accession,
                 sample_id,
             )
             raise
